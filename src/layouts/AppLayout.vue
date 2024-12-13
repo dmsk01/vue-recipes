@@ -33,7 +33,7 @@ const onSubmit = async () => {
         <div class="controls">
           <slot name="controls"></slot>
         </div>
-        <el-dropdown placement="bottom-end">
+        <el-dropdown v-if="authStore.isAuthenticated" placement="bottom-end">
           <el-button class="logo">
             <IconPerson />
           </el-button>
@@ -46,7 +46,7 @@ const onSubmit = async () => {
         </el-dropdown>
       </header>
       <main class="inner">
-        <slot name="meals"></slot>
+        <slot name="main"></slot>
       </main>
     </div>
   </div>

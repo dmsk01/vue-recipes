@@ -122,7 +122,7 @@ const fetchRecipe = async () => {
     <template #controls>
       <AppButton text="Сохранить" @click="createOuUpdateRecipe" />
     </template>
-    <template #meals>
+    <template #main>
       <AppLoader v-if="isLoading" />
       <div v-else class="wrapper">
         <div class="row">

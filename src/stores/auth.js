@@ -12,7 +12,8 @@ export const useAuthStore = defineStore("auth", {
       const { accessToken, refreshToken, user } = await login(credentials);
       const userInfo = {
         id: user.id,
-        name: user.username
+        name: user.name,
+        role: user.role
       }
       console.log(userInfo, this.user);
 
@@ -47,6 +48,7 @@ export const useAuthStore = defineStore("auth", {
   },
   getters: {
     isAuthenticated: (state) => !!state.token,
+    isAdmin: (state) => state.user?.role === "admin",
     userInfo: (state) => state.user,
   },
 });

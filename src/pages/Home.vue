@@ -31,7 +31,7 @@ onMounted(fetchRecipes)
         <AppButton text="Добавить рецепт" />
       </router-link>
     </template>
-    <template #meals>
+    <template #main>
       <AppLoader v-if="isLoading" />
       <RecipesTable v-else :recipes="recipes" />
     </template> 
