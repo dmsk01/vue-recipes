@@ -15,7 +15,6 @@ export const useAuthStore = defineStore("auth", {
         name: user.name,
         role: user.role
       }
-      console.log(userInfo, this.user);
 
       this.token = accessToken;
       this.refreshToken = refreshToken;

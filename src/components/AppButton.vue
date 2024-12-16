@@ -17,6 +17,6 @@ const props = defineProps({
 .btn {
   padding: 20px 25px;
   font-size: 17px;
-  background-color: $violet;
+  background-color: $lightBlue;
 }
 </style>

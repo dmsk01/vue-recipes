@@ -12,20 +12,28 @@
           <Dish />
         </el-icon>
       </el-menu-item>
+      <el-menu-item v-if="authStore.userInfo.role === 'admin'" :index="ROUTES_PATHS.DASHBOARD"
+        :class="['item', isPathActive(ROUTES_PATHS.DASHBOARD) && 'active']">
+        <el-icon size="24">
+          <Setting />
+        </el-icon>
+      </el-menu-item>
     </el-menu>
   </div>
 </template>
 
 <script setup>
 import { onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { ROUTES_PATHS } from '@/constants';
+import { useAuthStore } from '@/stores/auth'
 
-const router = useRouter();
 const route = useRoute();
 const isPathActive = (path) => {
   return route.path === path;
 }
+
+const authStore = useAuthStore();
 
 onMounted(isPathActive)
 
@@ -55,7 +63,7 @@ onMounted(isPathActive)
   color: white;
 
   &.active {
-    background-color: $violet;
+    background-color: $blue;
   }
 }
 </style>
