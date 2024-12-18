@@ -5,9 +5,9 @@
       <div class="admin-dashboard">
         <div class="user-list">
           <h2 class="title">Пользователи</h2>
-          <el-table :data="users" style="width: 100%">
-            <el-table-column prop="id" label="ID" width="50" />
-            <el-table-column prop="name" label="Имя" />
+          <el-table :data="usersStore.users" style="width: 50%">
+            <el-table-column prop="id" label="ID" width="150" />
+            <el-table-column prop="username" label="Имя" />
             <el-table-column prop="role" label="Роль" />
           </el-table>
         </div>
@@ -33,13 +33,11 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { useUsersStore } from '@/stores/users';
 
-const users = ref([
-  { id: 1, name: 'Иван Иванов', role: 'user' },
-  { id: 2, name: 'Мария Петрова', role: 'admin' }
-]);
+const usersStore = useUsersStore();
 
 const newUser = ref({
   name: '',
@@ -59,6 +57,21 @@ const addUser = () => {
     alert('Заполните все поля');
   }
 };
+
+const isLoading = ref(false);
+
+onMounted(async () => { await fetchUsers() });
+
+const fetchUsers = async () => {
+  try {
+    isLoading.value = true;
+    await usersStore.getUsers();
+  } catch (error) {
+    console.error(error);
+  } finally {
+    isLoading.value = false; // В любом случае выключаем индикатор загрузки
+  }
+}
 
 </script>
 

@@ -10,8 +10,6 @@ const authStore = useAuthStore();
 
 onMounted(() => {
   authStore.loadTokens();
-  console.log(authStore.token);
-
   if (authStore.token) {
     rootStore.getAreas();
     rootStore.getCategories();

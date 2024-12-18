@@ -10,17 +10,20 @@ import RecipesTable from '@/components/RecipesTable.vue'
 const recipes = ref();
 const isLoading = ref(false);
 
+onMounted(async () => { await fetchRecipes() });
+
 const fetchRecipes = async () => {
   try {
     isLoading.value = true;
-    recipes.value = await RecipeService.getRecipesByLetter();
-    isLoading.value = false;
+    const result = await RecipeService.getRecipesByLetter();
+    recipes.value = result;
   } catch (error) {
     console.error(error);
+  } finally {
+    isLoading.value = false; // В любом случае выключаем индикатор загрузки
   }
 }
 
-onMounted(fetchRecipes)
 </script>
 
 <template>
@@ -34,6 +37,6 @@ onMounted(fetchRecipes)
     <template #main>
       <AppLoader v-if="isLoading" />
       <RecipesTable v-else :recipes="recipes" />
-    </template> 
+    </template>
   </AppLayout>
 </template>
