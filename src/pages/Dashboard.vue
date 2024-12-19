@@ -14,9 +14,12 @@
 
         <div class="add-user">
           <h2 class="title">Добавить нового пользователя</h2>
-          <el-form :model="newUser" @submit.native.prevent="addUser">
+          <el-form ref="addUserForm" :model="newUser" @submit.native.prevent="addUser">
             <el-form-item label="Имя">
-              <el-input v-model="newUser.name" />
+              <el-input v-model="newUser.username" />
+            </el-form-item>
+            <el-form-item label="Пароль">
+              <el-input v-model="newUser.password" />
             </el-form-item>
             <el-form-item label="Роль">
               <el-select v-model="newUser.role" placeholder="Выберите роль">
@@ -24,7 +27,7 @@
                 <el-option label="Администратор" value="admin" />
               </el-select>
             </el-form-item>
-            <el-button type="primary" @click="addUser">Добавить</el-button>
+            <el-button type="primary" @click="addUser(addUserForm)">Добавить</el-button>
           </el-form>
         </div>
       </div>
@@ -39,19 +42,20 @@ import { useUsersStore } from '@/stores/users';
 
 const usersStore = useUsersStore();
 
+const addUserForm = ref()
+
 const newUser = ref({
-  name: '',
+  username: '',
+  password: '',
   role: ''
 });
 
-const addUser = () => {
-  if (newUser.value.name && newUser.value.role) {
-    users.value.push({
-      id: users.value.length + 1,
-      name: newUser.value.name,
-      role: newUser.value.role
-    });
-    newUser.value.name = '';
+const addUser = async (formEl) => {
+  if (!formEl) return;
+  if (newUser.value.username && newUser.value.password && newUser.value.role) {
+    await usersStore.addUser(newUser.value);
+    newUser.value.username = '';
+    newUser.value.password = '';
     newUser.value.role = '';
   } else {
     alert('Заполните все поля');

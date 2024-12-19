@@ -10,5 +10,9 @@ export const useUsersStore = defineStore("usersStore", {
       const result = await UserService.getUsers();
       this.users = result;
     },
+    async addUser(user) {
+      const result = await UserService.addUser(user);
+      this.users = result;
+    },
   }
 });

@@ -109,9 +109,10 @@ const fetchRecipe = async () => {
     recipe.value = { ...data };
     recipeUpdated.value = { ...data };
     isCreatingMode.value = false;
-    isLoading.value = false;
   } catch (error) {
     console.error(error);
+  } finally {
+    isLoading.value = false;
   }
 }
 </script>
