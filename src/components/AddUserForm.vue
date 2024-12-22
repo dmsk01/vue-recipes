@@ -14,33 +14,48 @@
           <el-option label="Администратор" value="admin" />
         </el-select>
       </el-form-item>
-      <el-button @click.native.prevent="handleSubmit(addUserFormRef)" type="primary">Добавить</el-button>
+      <el-button
+        @click.native.prevent="handleSubmit(addUserFormRef)"
+        type="primary"
+        >Добавить</el-button
+      >
     </el-form>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-const addUserFormRef = ref()
+import { ref } from "vue";
+import { useUsersStore } from "@/stores/users";
+const addUserFormRef = ref();
+
+const usersStore = useUsersStore();
+
+const addUser = async (newUser) => {
+  if (!newUser) return;
+  const { username, password, role } = newUser;
+  if (username && password && role) {
+    await usersStore.addUser(newUser);
+  } else {
+    alert("Заполните все поля");
+  }
+};
 
 const newUser = ref({
-  username: '',
-  password: '',
-  role: ''
+  username: "",
+  password: "",
+  role: "",
 });
 
-const emit = defineEmits(['addUser']);
+const emit = defineEmits(["addUser"]);
 
 const handleSubmit = (formEl) => {
   if (!formEl) return;
-  emit('addUser', { ...newUser.value });
-  console.log('click');
+  addUser({ ...newUser.value });
 
-  newUser.value.username = '';
-  newUser.value.password = '';
-  newUser.value.role = '';
-}
-
+  newUser.value.username = "";
+  newUser.value.password = "";
+  newUser.value.role = "";
+};
 </script>
 
 <style lang="scss" scoped></style>
