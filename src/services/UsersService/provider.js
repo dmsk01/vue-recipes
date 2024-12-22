@@ -15,15 +15,10 @@ export const addUser = async (user) => {
 };
 
 export const editUser = async (userId, newUser) => {
-  console.log("Service call", userId, newUser);
-  // const response = await api.post(
-  //   "/admin/edit",
-  //   { userId, newUser },
-  //   {
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //   }
-  // );
-  // return response.data.users;
+  const response = await api.put(`/admin/users/${userId}`, newUser, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
 };

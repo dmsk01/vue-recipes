@@ -16,7 +16,10 @@
       <el-table-column label="Роль">
         <template #default="{ row }">
           <template v-if="row.isEditing">
-            <el-input v-model="row.role" size="small" />
+            <el-select v-model="row.role" placeholder="Выберите роль">
+              <el-option label="Пользователь" value="user" />
+              <el-option label="Администратор" value="admin" />
+            </el-select>
           </template>
           <template v-else>
             {{ row.role }}
@@ -71,9 +74,18 @@ const editRow = (row) => {
   row.originalData = { ...row };
 };
 
-const saveRow = (row) => {
-  row.isEditing = false;
-  delete row.originalData;
+const saveRow = async (row) => {
+  try {
+    row.isEditing = false;
+    await usersStore.editUser(row.id, {
+      username: row.username,
+      role: row.role,
+    });
+    delete row.originalData;
+  } catch (error) {
+    console.error("Error saving user data:", error);
+    cancelEdit(row);
+  }
 };
 
 const cancelEdit = (row) => {

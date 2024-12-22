@@ -16,7 +16,10 @@ export const useUsersStore = defineStore("usersStore", {
     },
     async editUser(userId, newUser) {
       const result = await UserService.editUser(userId, newUser);
-      // this.users = result;
+      // Обновляем список пользователей после успешного редактирования
+      this.users = this.users.map(user => 
+        user.id === userId ? { ...user, ...newUser } : user
+      );
     },
   },
 });
