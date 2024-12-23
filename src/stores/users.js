@@ -16,10 +16,23 @@ export const useUsersStore = defineStore("usersStore", {
     },
     async editUser(userId, newUser) {
       const result = await UserService.editUser(userId, newUser);
-      // Обновляем список пользователей после успешного редактирования
-      this.users = this.users.map(user => 
-        user.id === userId ? { ...user, ...newUser } : user
-      );
+      if (result.status === 200) {
+        this.users = this.users.map((user) =>
+          user.id === userId ? { ...user, ...newUser } : user
+        );
+      }
+    },
+    async deleteUser(userId) {
+      try {
+        const result = await UserService.deleteUser(userId);
+        if (result.status === 200) {
+          this.users = this.users.filter((user) => user.id !== userId);
+        } else {
+          console.error("Failed to delete user:", result.statusText);
+        }
+      } catch (error) {
+        console.error("Error deleting user:", error);
+      }
     },
   },
 });

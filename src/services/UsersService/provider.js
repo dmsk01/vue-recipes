@@ -6,19 +6,20 @@ export const getUsers = async () => {
 };
 
 export const addUser = async (user) => {
-  const response = await api.post("/admin/register", user, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  const response = await api.post("/admin/register", user);
   return response.data.users;
 };
 
 export const editUser = async (userId, newUser) => {
-  const response = await api.put(`/admin/users/${userId}`, newUser, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  return response.data;
+  const response = await api.put(`/admin/users/${userId}`, newUser);
+  if (response.status === 200) {
+    return { data: response.data, status: response.status };
+  }
+};
+
+export const deleteUser = async (userId) => {
+  const response = await api.delete(`/admin/users/${userId}`);
+  if (response.status === 200) {
+    return { data: response.data, status: response.status };
+  }
 };

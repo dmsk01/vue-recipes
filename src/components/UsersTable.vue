@@ -40,6 +40,27 @@
             <el-button link type="primary" size="small" @click="editRow(row)"
               >Редактировать</el-button
             >
+            <el-button
+              link
+              type="danger"
+              size="small"
+              @click="dialogVisible = true"
+              >Удалить</el-button
+            >
+            <el-dialog v-model="dialogVisible" title="Tips" width="500">
+              <span
+                >Уверены что хотите удалить пользователя
+                {{ row.username }}</span
+              >
+              <template #footer>
+                <div class="dialog-footer">
+                  <el-button @click="dialogVisible = false">Cancel</el-button>
+                  <el-button type="primary" @click="deleteRow(row)">
+                    Confirm
+                  </el-button>
+                </div>
+              </template>
+            </el-dialog>
           </template>
         </template>
       </el-table-column>
@@ -49,10 +70,13 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
+import { ElMessage } from "element-plus";
 import { useUsersStore } from "@/stores/users";
 
 const usersStore = useUsersStore();
 const isLoading = ref(false);
+
+const dialogVisible = ref(false);
 
 onMounted(async () => {
   await fetchUsers();
@@ -82,8 +106,10 @@ const saveRow = async (row) => {
       role: row.role,
     });
     delete row.originalData;
+    ElMessage.success(`${row.username} successfully changed!`);
   } catch (error) {
     console.error("Error saving user data:", error);
+    ElMessage.error(`Something went wrong while changing ${row.username}`);
     cancelEdit(row);
   }
 };
@@ -93,6 +119,12 @@ const cancelEdit = (row) => {
   row.isEditing = false;
   delete row.originalData;
 };
+
+const deleteRow = async (row) => {
+  await usersStore.deleteUser(row.id);
+  dialogVisible.value = false;
+};
+
 </script>
 
 <style scoped></style>
