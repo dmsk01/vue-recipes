@@ -1,21 +1,21 @@
 <script setup>
-import { onMounted } from 'vue';
-import { RouterView, useRouter } from 'vue-router'
-import { useRootStore } from './stores/root';
-import { useAuthStore } from './stores/auth';
+import { onMounted } from "vue";
+import { RouterView, useRouter } from "vue-router";
+import { useRootStore } from "./stores/root";
+import { useAuthStore } from "./stores/auth";
 
 const rootStore = useRootStore();
 
 const authStore = useAuthStore();
 
 onMounted(() => {
-  authStore.loadTokens();
-  if (authStore.token) {
+  authStore.loadUserFromCookies();
+  if (authStore.isAuthenticated) {
     rootStore.getAreas();
     rootStore.getCategories();
     rootStore.getIngredients();
   }
-})
+});
 </script>
 
 <template>

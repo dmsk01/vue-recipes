@@ -1,10 +1,10 @@
 <script setup>
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
-import AppMenu from '@/components/AppMenu.vue'
-import IconPerson from '@/components/icons/IconPerson.vue';
-import { useAuthStore } from '@/stores/auth';
-import { ROUTES_PATHS } from '@/constants';
+import AppMenu from "@/components/AppMenu.vue";
+import IconPerson from "@/components/icons/IconPerson.vue";
+import { useAuthStore } from "@/stores/auth";
+import { ROUTES_PATHS } from "@/constants";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -17,7 +17,7 @@ const onSubmit = async () => {
   } catch (error) {
     ElMessage.error("Something went wrong! " + error.message);
   }
-}
+};
 </script>
 
 <template>
@@ -39,8 +39,10 @@ const onSubmit = async () => {
           </el-button>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item>{{ authStore.userInfo.name }}</el-dropdown-item>
-              <el-dropdown-item divided @click="onSubmit">Logout</el-dropdown-item>
+              <el-dropdown-item>{{ authStore.user.name }}</el-dropdown-item>
+              <el-dropdown-item divided @click="onSubmit"
+                >Logout</el-dropdown-item
+              >
             </el-dropdown-menu>
           </template>
         </el-dropdown>

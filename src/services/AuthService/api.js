@@ -4,6 +4,7 @@ import { useAuthStore } from "@/stores/auth";
 const api = axios.create({
   baseURL: "http://localhost:3000",
   timeout: 5000,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
@@ -18,24 +19,22 @@ api.interceptors.request.use((config) => {
 });
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => response, // Пропускаем успешные запросы
   async (error) => {
-    const authStore = useAuthStore();
-    const originalRequest = error.config;
-
-    if (error.response && error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
+    if (error.response?.status === 401 && !error.config._retry) {
+      error.config._retry = true;
       try {
-        const newToken = await authStore.refreshToken();
-        api.defaults.headers.Authorization = `Bearer ${newToken}`;
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        return api(originalRequest);
+        // Отправляем запрос на обновление accessToken
+        await api.post("/refresh");
+        // Повторяем оригинальный запрос
+        return api(error.config);
       } catch (refreshError) {
-        authStore.logout();
+        // Если обновление токена не удалось
+        console.error("Refresh token failed", refreshError);
         return Promise.reject(refreshError);
       }
     }
-    return Promise.reject(error);
+    return Promise.reject(error); // Пропускаем другие ошибки
   }
 );
 

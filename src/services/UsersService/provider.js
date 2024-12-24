@@ -7,7 +7,7 @@ export const getUsers = async () => {
 
 export const addUser = async (user) => {
   const response = await api.post("/admin/register", user);
-  return response.data.users;
+  return response.data.user;
 };
 
 export const editUser = async (userId, newUser) => {
