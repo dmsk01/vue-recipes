@@ -1,29 +1,48 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { RouterLink } from 'vue-router';
-import { RecipeService } from '@/services';
-import AppLayout from '@/layouts/AppLayout.vue';
-import AppButton from '@/components/AppButton.vue';
-import AppLoader from '@/components/AppLoader.vue';
-import RecipesTable from '@/components/RecipesTable.vue'
+import { ref, onMounted, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { RecipeService } from "@/services";
+import AppLayout from "@/layouts/AppLayout.vue";
+import AppButton from "@/components/AppButton.vue";
+import AppLoader from "@/components/AppLoader.vue";
+import AlphabetMenu from "@/components/AlphabetMenu.vue";
+import RecipesTable from "@/components/RecipesTable.vue";
 
+const route = useRoute();
+const router = useRouter();
+
+const currentRecipeChar = ref(route.params.char || "a"); // Берем букву из маршрута или используем "a" по умолчанию
 const recipes = ref();
 const isLoading = ref(false);
 
-onMounted(async () => { await fetchRecipes() });
+onMounted(async () => {
+  await fetchRecipes();
+});
 
 const fetchRecipes = async () => {
   try {
     isLoading.value = true;
-    const result = await RecipeService.getRecipesByLetter();
+    const result = await RecipeService.getRecipesByLetter(
+      currentRecipeChar.value
+    );
     recipes.value = result;
   } catch (error) {
     console.error(error);
   } finally {
-    isLoading.value = false; // В любом случае выключаем индикатор загрузки
+    isLoading.value = false; // Выключаем индикатор загрузки
   }
-}
+};
 
+// Следим за изменением параметра маршрута
+watch(
+  () => route.params.char,
+  async (newChar) => {
+    if (newChar) {
+      currentRecipeChar.value = newChar;
+      await fetchRecipes();
+    }
+  }
+);
 </script>
 
 <template>
@@ -36,7 +55,10 @@ const fetchRecipes = async () => {
     </template>
     <template #main>
       <AppLoader v-if="isLoading" />
-      <RecipesTable v-else :recipes="recipes" />
+      <div v-else class="content">
+        <AlphabetMenu @charChange="(char) => $router.push({ params: { char } })" />
+        <RecipesTable :recipes="recipes" />
+      </div>
     </template>
   </AppLayout>
 </template>

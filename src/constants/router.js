@@ -5,4 +5,5 @@ export const ROUTES_PATHS = {
   LOGIN: '/login',
   RECIPE: '/recipes/:id',
   NOTFOUND: '/:pathMatch(.*)*',
+  RECIPECHAR: "/:char?",
 }

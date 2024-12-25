@@ -1,8 +1,8 @@
 import axios from "axios";
 import { URL_RECIPES_BY_ID, URL_RECIPES_BY_LETTER } from '@/constants'
 
-export const getRecipesByLetter = async () => {
-  const data = await axios.get(URL_RECIPES_BY_LETTER);
+export const getRecipesByLetter = async (char) => {
+  const data = await axios.get(URL_RECIPES_BY_LETTER + char);
 
   return data?.data?.meals;
 }
