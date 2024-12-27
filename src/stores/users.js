@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { UserService } from "@/services";
+import { AdminService } from "@/services";
 
 export const useUsersStore = defineStore("usersStore", {
   state: () => ({
@@ -7,12 +7,12 @@ export const useUsersStore = defineStore("usersStore", {
   }),
   actions: {
     async getUsers() {
-      const result = await UserService.getUsers();
+      const result = await AdminService.getUsers();
       this.users = result;
     },
     async addUser(user) {
       try {
-        const newUser = await UserService.addUser(user);
+        const newUser = await AdminService.addUser(user);
         this.users.push(newUser);
       } catch (error) {
         console.error("Error adding user:", error);
@@ -20,7 +20,7 @@ export const useUsersStore = defineStore("usersStore", {
     },
     async editUser(userId, newUser) {
       try {
-        const result = await UserService.editUser(userId, newUser);
+        const result = await AdminService.editUser(userId, newUser);
         if (result.status === 200) {
           this.users = this.users.map((user) =>
             user.id === userId ? { ...user, ...newUser } : user
@@ -34,7 +34,7 @@ export const useUsersStore = defineStore("usersStore", {
     },
     async deleteUser(userId) {
       try {
-        const result = await UserService.deleteUser(userId);
+        const result = await AdminService.deleteUser(userId);
         if (result.status === 200) {
           this.users = this.users.filter((user) => user.id !== userId);
         } else {
