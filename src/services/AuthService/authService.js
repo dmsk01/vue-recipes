@@ -14,3 +14,8 @@ export const logout = async () => {
   const response = await api.post("/logout");
   return response.data;
 };
+
+export const validate = async () => {
+  const response = await api.get("/validate");
+  return response;
+};

@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import Cookies from "js-cookie";
 import { useAuthStore } from "../stores/auth";
 
 import { ROUTES_PATHS } from "@/constants";
@@ -62,20 +63,27 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  const authStore = useAuthStore();
+  const authStore = useAuthStore();  
+  if (!authStore.user) {
+      const userCookie = Cookies.get("user");
+      if (userCookie) {
+        try {
+          authStore.user = JSON.parse(userCookie);
+        } catch (error) {
+          console.error("Ошибка при парсинге user из куков:", error);
+          Cookies.remove("user"); // Удаляем некорректную куку
+        }
+      }
+    }
 
-  if (!authStore.token && localStorage.getItem("accessToken")) {
-    await authStore.loadTokens();
-  }
-
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+  if (to.meta.requiresAuth && !authStore.user) {
     if (to.path !== "/login") {
       next("/login");
     } else {
       next(); // Не перенаправлять снова на /login чтобы не было зацикленности
     }
-  } else if (to.path === "/login" && authStore.isAuthenticated) {
-    next(authStore.isAdmin ? "/dashboard" : "/");
+  } else if (to.path === "/login" && authStore.user) {
+    next(authStore.hasAccess('admin') ? "/dashboard" : "/");
   } else {
     next();
   }
