@@ -14,6 +14,7 @@
 import AppLayout from "@/layouts/AppLayout.vue";
 import UsersTable from "@/components/UsersTable.vue";
 import AddUserForm from "@/components/AddUserForm.vue";
+
 </script>
 
 <style scoped>

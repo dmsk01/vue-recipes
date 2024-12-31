@@ -12,7 +12,7 @@
           <Dish />
         </el-icon>
       </el-menu-item>
-      <el-menu-item v-if="authStore?.user?.role === 'admin'" :index="ROUTES_PATHS.DASHBOARD"
+      <el-menu-item v-if="authStore?.hasAccess('admin')" :index="ROUTES_PATHS.DASHBOARD"
         :class="['item', isPathActive(ROUTES_PATHS.DASHBOARD) && 'active']">
         <el-icon size="24">
           <Setting />

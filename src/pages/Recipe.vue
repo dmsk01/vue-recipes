@@ -6,7 +6,10 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import AppButton from '@/components/AppButton.vue';
 import AppLoader from '@/components/AppLoader.vue';
 import { useRootStore } from '@/stores/root';
+import { useAuthStore } from '@/stores/auth';
 import { notify } from '@/utils';
+
+const authStore = useAuthStore();
 
 const route = useRoute();
 const recipeId = route.params.id;
@@ -120,12 +123,12 @@ const fetchRecipe = async () => {
 <template>
   <AppLayout>
     <template #title>{{ isCreatingMode ? 'Новый рецепт' : recipeUpdated.strMeal }}</template>
-    <template #controls>
+    <template v-if="authStore.hasAccess('admin')" #controls>
       <AppButton text="Сохранить" @click="createOuUpdateRecipe" />
     </template>
     <template #main>
       <AppLoader v-if="isLoading" />
-      <div v-else class="wrapper">
+      <div v-else-if="authStore.hasAccess('admin')" class="wrapper">
         <div class="row">
           <div class="col">
             <h3 class="label">Title</h3>
@@ -171,6 +174,46 @@ const fetchRecipe = async () => {
                 </li>
               </ul>
               <AppButton text="Add ingredient" @click="addIngredient" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div v-else-if="!authStore.hasAccess('admin')" class="wrapper">
+        <div class="row">
+          <div class="col">
+            <h3 class="label">Area</h3>
+            <el-text placeholder="Area">
+              {{ recipe.strArea }}
+            </el-text>
+          </div>
+          <div class="col">
+            <h3 class="label">Category</h3>
+            <el-text>
+              {{ recipe.strCategory }}
+            </el-text>
+          </div>
+          <div class="col">
+            <h3 class="label">Instruction</h3>
+            <el-text>{{ recipe.strInstructions }}</el-text>
+          </div>
+          <div class="col">
+            <div class="ingredients">
+              <h3 class="label">Ingredients</h3>
+              <ul v-for="(ingredient, indx) in recipeIngredients" :key="`${ingredient.id}${indx}`" class="row">
+                <li class="row">
+                  <span class="number" style="min-width: 20px; align-self: center; text-align: center;">
+                    {{ indx + 1 }}
+                  </span>
+
+                  <div>
+                    <el-text>{{ recipeIngredients[indx].measure }}</el-text>
+                  </div>
+
+                  <div>
+                    <el-text>{{ recipeIngredients[indx].title }}</el-text>
+                  </div>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
