@@ -3,7 +3,6 @@ import Cookies from "js-cookie";
 import { useAuthStore } from "../stores/auth";
 
 import { ROUTES_PATHS } from "@/constants";
-import Login from "@/pages/Login.vue";
 
 const adminGuard = (to, from, next) => {
   const authStore = useAuthStore();
@@ -50,7 +49,7 @@ const router = createRouter({
     {
       path: ROUTES_PATHS.LOGIN,
       name: "login",
-      component: Login,
+      component: () => import("@/pages/Login.vue"),
       meta: { requiresAuth: false, requiresAdmin: false },
     },
     {
@@ -63,18 +62,18 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  const authStore = useAuthStore();  
+  const authStore = useAuthStore();
   if (!authStore.user) {
-      const userCookie = Cookies.get("user");
-      if (userCookie) {
-        try {
-          authStore.user = JSON.parse(userCookie);
-        } catch (error) {
-          console.error("Ошибка при парсинге user из куков:", error);
-          Cookies.remove("user"); // Удаляем некорректную куку
-        }
+    const userCookie = Cookies.get("user");
+    if (userCookie) {
+      try {
+        authStore.user = JSON.parse(userCookie);
+      } catch (error) {
+        console.error("Ошибка при парсинге user из куков:", error);
+        Cookies.remove("user"); // Удаляем некорректную куку
       }
     }
+  }
 
   if (to.meta.requiresAuth && !authStore.user) {
     if (to.path !== "/login") {

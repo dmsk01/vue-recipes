@@ -14,27 +14,28 @@
           <el-option label="Администратор" value="admin" />
         </el-select>
       </el-form-item>
-      <el-button
-        @click.native.prevent="handleSubmit(addUserFormRef)"
-        type="primary"
-        >Добавить</el-button
-      >
+      <el-button :loading="isLoading" @click.native.prevent="handleSubmit(addUserFormRef)"
+        type="primary">Добавить</el-button>
     </el-form>
   </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
-import { useUsersStore } from "@/stores/users";
-const addUserFormRef = ref();
+import { useUsers } from "@/composables/useUsers";
 
-const usersStore = useUsersStore();
+const {
+  isLoading,
+  addUserMutation,
+} = useUsers();
+
+const addUserFormRef = ref();
 
 const addUser = async (newUser) => {
   if (!newUser) return;
   const { username, password, role } = newUser;
   if (username && password && role) {
-    await usersStore.addUser(newUser);
+    await addUserMutation.mutate(newUser);
   } else {
     alert("Заполните все поля");
   }

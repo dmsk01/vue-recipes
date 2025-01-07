@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted } from "vue";
-import { RouterView, useRouter } from "vue-router";
+import { RouterView } from "vue-router";
+
 import { useRootStore } from "./stores/root";
 import { useAuthStore } from "./stores/auth";
 

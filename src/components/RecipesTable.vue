@@ -23,7 +23,6 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
 import { RecipeService } from '@/services';
 const { recipes } = defineProps({
   recipes: Array
