@@ -10,8 +10,17 @@ export function useUsers() {
     ["users"],
     AdminService.getUsers,
     {
+      staleTime: 1000 * 60 * 5, // Данные считаются свежими 5 минут
+      cacheTime: 1000 * 60 * 30, // Данные хранятся в кэше 30 минут
       onSuccess: (data) => {
         usersStore.setUsers(data); // Сохраняем данные в Pinia
+      },
+      onSettled: (data, error) => {
+        if (error) {
+          console.error("Ошибка загрузки:", error);
+        } else {
+          console.log("Источник данных: ", data);
+        }
       },
     }
   );

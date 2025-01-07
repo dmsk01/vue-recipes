@@ -22,12 +22,11 @@
 
 <script setup>
 import { ref } from "vue";
-import { useUsers } from "@/composables/useUsers";
 
-const {
-  isLoading,
-  addUserMutation,
-} = useUsers();
+const { isLoading, addUserMutation } = defineProps({
+  isLoading: Boolean,
+  addUserMutation: Object,
+});
 
 const addUserFormRef = ref();
 
@@ -47,7 +46,7 @@ const newUser = ref({
   role: "",
 });
 
-const emit = defineEmits(["addUser"]);
+// const emit = defineEmits(["addUser"]);
 
 const handleSubmit = (formEl) => {
   if (!formEl) return;

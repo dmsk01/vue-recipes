@@ -3,8 +3,9 @@
     <template #title>Админка</template>
     <template #main>
       <div class="admin-dashboard">
-        <users-table />
-        <add-user-form />
+        <users-table :users="users" :isLoading="isLoading" :error="error" :editUserMutation="editUserMutation"
+          :deleteUserMutation="deleteUserMutation" />
+        <add-user-form :addUserMutation="addUserMutation" :isLoading="isLoading" />
       </div>
     </template>
   </AppLayout>
@@ -14,6 +15,16 @@
 import AppLayout from "@/layouts/AppLayout.vue";
 import UsersTable from "@/components/UsersTable.vue";
 import AddUserForm from "@/components/AddUserForm.vue";
+import { useUsers } from "@/composables/useUsers";
+
+const {
+  users,
+  isLoading,
+  error,
+  addUserMutation,
+  editUserMutation,
+  deleteUserMutation
+} = useUsers();
 
 </script>
 

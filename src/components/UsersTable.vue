@@ -61,15 +61,14 @@
 <script setup>
 import { ref } from "vue";
 import { ElMessage } from "element-plus";
-import { useUsers } from "@/composables/useUsers";
 
-const {
-  users,
-  isLoading,
-  error,
-  editUserMutation,
-  deleteUserMutation
-} = useUsers();
+const { users, isLoading, error, editUserMutation, deleteUserMutation } = defineProps({
+  users: Array,
+  isLoading: Boolean,
+  error: Object,
+  editUserMutation: Object,
+  deleteUserMutation: Object,
+});
 
 const dialogVisible = ref(false);
 

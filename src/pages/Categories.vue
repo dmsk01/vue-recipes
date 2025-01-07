@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { computed } from 'vue';
 import { useRootStore } from '@/stores/root'; 
 import AppLayout from '@/layouts/AppLayout.vue';
 
