@@ -10,7 +10,7 @@ const categories = computed(() => rootStore.categories)
 
 <template>
   <AppLayout>
-    <template #title>Категории</template>
+    <template #title>Categories</template>
     <template #main>
       <el-table :data="categories">
         <el-table-column prop="strCategory" label="Category" />

@@ -3,8 +3,9 @@ import { URL_RECIPES_BY_ID, URL_RECIPES_BY_LETTER } from '@/constants'
 
 export const getRecipesByLetter = async (char) => {
   const data = await axios.get(URL_RECIPES_BY_LETTER + char);
+  const result = data?.data[char];
 
-  return data?.data?.meals;
+  return result;
 }
 
 export const getRecipesById = async (id) => {
@@ -14,7 +15,7 @@ export const getRecipesById = async (id) => {
 }
 
 export const createRecipe = () => {
-  
+
 }
 
-export const updateRecipe = () => {}
+export const updateRecipe = () => { }

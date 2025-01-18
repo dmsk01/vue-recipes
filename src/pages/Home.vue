@@ -25,6 +25,7 @@ const fetchRecipes = async () => {
     const result = await RecipeService.getRecipesByLetter(
       currentRecipeChar.value
     );
+    
     recipes.value = result;
   } catch (error) {
     console.error(error);
@@ -47,7 +48,7 @@ watch(
 
 <template>
   <AppLayout>
-    <template #title>Рецепты</template>
+    <template #title>Recipes</template>
     <template #controls>
       <router-link :to="RecipeService.getRecipePath('new')">
         <AppButton text="Добавить рецепт" />
@@ -56,7 +57,7 @@ watch(
     <template #main>
       <AppLoader v-if="isLoading" />
       <div v-else class="content">
-        <AlphabetMenu @charChange="(char) => $router.push({ params: { char } })" />
+        <AlphabetMenu @charChange="(char) => router.push({ params: { char } })" />
         <RecipesTable :recipes="recipes" />
       </div>
     </template>

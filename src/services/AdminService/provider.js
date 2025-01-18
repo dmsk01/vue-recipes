@@ -1,8 +1,13 @@
 import api from "../AuthService/api";
 
 export const getUsers = async () => {
-  const response = await api.get("/admin/users");
-  return response.data;
+  try {
+    const response = await api.get("/admin/users");
+    console.log("Users:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch users:", error.response?.data || error.message);
+  }
 };
 
 export const addUser = async (user) => {

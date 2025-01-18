@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <template #title>Админка</template>
+    <template #title>Dashboard</template>
     <template #main>
       <div class="admin-dashboard">
         <users-table :users="users" :isLoading="isLoading" :error="error" :editUserMutation="editUserMutation"
