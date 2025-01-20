@@ -1,83 +1,39 @@
 <template>
-  <el-form
-    ref="ruleFormRef"
-    :rules="baseRules"
-    :model="ruleForm"
-    class="login-form"
-    :inline="false"
-  >
-    <el-form-item label="Login" prop="login">
-      <el-input v-model="ruleForm.login" />
-    </el-form-item>
-    <el-form-item label="Password" prop="password">
-      <el-input v-model="ruleForm.password" type="password" />
-    </el-form-item>
-    <el-form-item>
-      <el-button type="primary" @click="onSubmit(ruleFormRef)">
-        Login
-      </el-button>
-    </el-form-item>
-  </el-form>
+  <div class="page-wrapper">
+    <h1>Вход в систему</h1>
+    <LoginForm @submit="onSubmit"/>
+  </div>
 </template>
 
 <script setup>
-import { reactive, ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { useAuthStore } from "@/stores/auth";
 import { ElMessage } from "element-plus";
+import { useAuthStore, LoginForm } from "@/features/Auth";
 import { ROUTES_PATHS } from "@/constants";
 
 const router = useRouter();
-const ruleFormRef = ref();
 const authStore = useAuthStore();
 
-const ruleForm = reactive({
-  login: "admin",
-  password: "your_password",
-});
-
-// Основные правила
-const baseRules = {
-  login: [
-    { required: true, message: "Please input login", trigger: "blur" },
-    { min: 3, max: 10, message: "Length should be 3 to 10", trigger: "change" },
-  ],
-  password: [
-    { required: true, message: "Please input password", trigger: "blur" },
-  ],
-};
-
-const onSubmit = async (formEl) => {
-  if (!formEl) return;
-  await formEl.validate(async (valid) => {
-    if (valid) {
-      try {
-        await authStore.login({
-          username: ruleForm.login,
-          password: ruleForm.password,
-          role: "user",
-        });
-
-        ElMessage.success("Logged in successfully!");
-        router.push(ROUTES_PATHS.HOME);
-      } catch (error) {
-        ElMessage.error(error.message || "An error occurred");
-      }
-    } else {
-      ElMessage.error("Validation failed!");
-    }
-  });
+const onSubmit = async (credentials) => {
+  try {
+    await authStore.login(credentials);
+    ElMessage.success("Logged in successfully!");
+    router.push(ROUTES_PATHS.HOME);
+  } catch (error) {
+    ElMessage.error(error.message || "An error occurred during login.");
+  }
 };
 </script>
 
 <style lang="scss">
-.login-form {
+.page-wrapper {
   display: flex;
+  gap: 40px;
   justify-content: center;
-  align-items: flex-end;
+  align-items: center;
   flex-direction: column;
   min-height: 100vh;
-  max-width: 300px;
+  max-width: 400px;
   margin: 0 auto;
 }
 

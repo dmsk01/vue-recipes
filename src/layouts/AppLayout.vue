@@ -63,6 +63,7 @@ const onSubmit = async () => {
 
 .right {
   flex: 1 1 auto;
+  max-width: 100%;
   padding: 15px 10px;
 }
 

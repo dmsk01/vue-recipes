@@ -33,7 +33,7 @@ const emit = defineEmits(["charChange"]);
 </script>
 
 <template>
-  <ul>
+  <ul class="alphabet-menu">
     <li v-for="char in charList" :key="char">
       <el-button @click="emit('charChange', char)">{{ char }}</el-button>
     </li>
@@ -41,10 +41,11 @@ const emit = defineEmits(["charChange"]);
 </template>
 
 <style lang="scss" scoped>
-ul {
+.alphabet-menu {
   padding: 0;
   list-style: none;
   display: flex;
-  gap: 5px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 </style>
