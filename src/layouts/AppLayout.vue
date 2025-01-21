@@ -1,25 +1,3 @@
-<script setup>
-import { useRouter } from "vue-router";
-import { ElMessage } from "element-plus";
-import AppMenu from "@/components/AppMenu.vue";
-import IconPerson from "@/components/icons/IconPerson.vue";
-import { useAuthStore } from "@/stores/auth";
-import { ROUTES_PATHS } from "@/constants";
-
-const router = useRouter();
-const authStore = useAuthStore();
-
-const onSubmit = async () => {
-  try {
-    await authStore.logout();
-    router.push(ROUTES_PATHS.LOGIN);
-    ElMessage.success("Successfully logout!");
-  } catch (error) {
-    ElMessage.error("Something went wrong! " + error.message);
-  }
-};
-</script>
-
 <template>
   <div class="root">
     <aside class="menu-inner">
@@ -40,9 +18,9 @@ const onSubmit = async () => {
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item>{{ authStore.user.name }}</el-dropdown-item>
-              <el-dropdown-item divided @click="onSubmit"
-                >Logout</el-dropdown-item
-              >
+              <el-dropdown-item divided>
+                <LogoutButton @logout="onLogout" />
+              </el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -53,6 +31,29 @@ const onSubmit = async () => {
     </div>
   </div>
 </template>
+
+<script setup>
+import { useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
+import AppMenu from "@/components/AppMenu.vue";
+import IconPerson from "@/components/icons/IconPerson.vue";
+import { useAuthStore, LogoutButton } from "@/features/Auth";
+import { ROUTES_PATHS } from "@/constants";
+
+const router = useRouter();
+const authStore = useAuthStore();
+
+const onLogout = async () => {
+  try {
+    await authStore.logout();
+    await router.push(ROUTES_PATHS.LOGIN);
+    ElMessage.success("Successfully logged out!");
+  } catch (error) {
+    ElMessage.error("Something went wrong! " + error.message);
+  }
+};
+</script>
+
 
 <style lang="scss" scoped>
 @import "@/assets/styles/index.scss";

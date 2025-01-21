@@ -71,6 +71,6 @@ export const loadUserFromCookies = (store) => {
     }
   }
 }
-export const hasAccess = (store,role) => {
+export const hasAccess = (store, role) => {
   return store.user && store.user.role === role;
 }

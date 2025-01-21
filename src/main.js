@@ -9,6 +9,7 @@ import router from './router';
 
 import './assets/styles/index.scss';
 import 'element-plus/dist/index.css';
+import 'devextreme/dist/css/dx.light.css';
 import ElementPlus from 'element-plus';
 
 

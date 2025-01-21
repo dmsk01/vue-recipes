@@ -1,53 +1,41 @@
 <template>
-  <el-form
-    ref="formRef"
-    :rules="rules"
-    :model="form"
-    class="login-form"
-    :inline="false"
-  >
-    <el-form-item label="Имя пользователя:" prop="username">
-      <el-input class="login-input" v-model="form.username" />
-    </el-form-item>
-    <el-form-item label="Пароль:" prop="password">
-      <el-input class="login-input" v-model="form.password" type="password" />
-    </el-form-item>
-    <el-form-item>
-      <el-button type="primary" @click="handleSubmit">
-        Login
-      </el-button>
-    </el-form-item>
-  </el-form>
+  <form @submit="handleSubmit">
+    <DxForm id="form" ref="formRef" :form-data="formData">
+      <DxSimpleItem :is-required="true" data-field="username" />
+      <DxSimpleItem :is-required="true" data-field="password" />
+      <DxButtonItem :button-options="submitButtonOptions" />
+    </DxForm>
+  </form>
 </template>
 
 <script setup>
-import { reactive, ref, defineEmits } from "vue";
+import { ref } from "vue";
+import DxForm, { DxSimpleItem, DxButtonItem } from 'devextreme-vue/form';
 
-const formRef = ref();
+const submitButtonOptions = {
+  text: "Log in",
+  type: 'success',
+  useSubmitBehavior: true,
+}
 
 const emit = defineEmits(["submit"]);
 
-const form = reactive({
+const formRef = ref(null);
+
+const formData = ref({
   username: "admin",
   password: "your_password",
 });
 
-const rules = {
-  username: [
-    { required: true, message: "Please input username", trigger: "blur" },
-    { min: 3, max: 10, message: "Length should be 3 to 10", trigger: "change" },
-  ],
-  password: [
-    { required: true, message: "Please input password", trigger: "blur" },
-  ],
-};
+const handleSubmit = (e) => {
+  e.preventDefault();
+  const formInstance = formRef.value?.instance;
+  if (!formInstance.validate().isValid) {
+    console.error("Invalid form");
+    return;
+  }
+  emit("submit", { ...formData.value });
 
-const handleSubmit = () => {
-  formRef.value.validate((valid) => {
-    if(valid){
-      emit("submit", {...form});
-    }
-  })
 }
 </script>
 

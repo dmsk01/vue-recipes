@@ -1,13 +1,13 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Cookies from "js-cookie";
-import { useAuthStore } from "../stores/auth";
+import { useAuthStore } from "@/features/Auth";
 
 import { ROUTES_PATHS } from "@/constants";
 
 const adminGuard = (to, from, next) => {
   const authStore = useAuthStore();
   if (!authStore.isAdmin) {
-    return next("/");
+    return next(ROUTES_PATHS.HOME);
   }
   next();
 };
@@ -19,7 +19,7 @@ const router = createRouter({
       path: ROUTES_PATHS.HOME,
       name: "home",
       component: () => import("@/pages/Home.vue"),
-      meta: { requiresAuth: true, requiresAdmin: true },
+      meta: { requiresAuth: true, requiresAdmin: false },
     },
     {
       path: ROUTES_PATHS.CATEGORIES,
@@ -54,7 +54,7 @@ const router = createRouter({
     },
     {
       path: ROUTES_PATHS.RECIPECHAR,
-      name: "home",
+      name: "recipe-char",
       component: () => import("@/pages/Home.vue"),
       meta: { requiresAuth: true, requiresAdmin: true },
     },
@@ -70,19 +70,15 @@ router.beforeEach(async (to, from, next) => {
         authStore.user = JSON.parse(userCookie);
       } catch (error) {
         console.error("Ошибка при парсинге user из куков:", error);
-        Cookies.remove("user"); // Удаляем некорректную куку
+        Cookies.remove("user", { path: '/' }); // Удаляем некорректную куку
       }
     }
   }
 
   if (to.meta.requiresAuth && !authStore.user) {
-    if (to.path !== "/login") {
-      next("/login");
-    } else {
-      next(); // Не перенаправлять снова на /login чтобы не было зацикленности
-    }
-  } else if (to.path === "/login" && authStore.user) {
-    next(authStore.hasAccess('admin') ? "/dashboard" : "/");
+    next(ROUTES_PATHS.LOGIN);
+  } else if (to.path === ROUTES_PATHS.LOGIN && authStore.user) {
+    next(ROUTES_PATHS.HOME);
   } else {
     next();
   }

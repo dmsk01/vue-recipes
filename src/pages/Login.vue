@@ -1,7 +1,7 @@
 <template>
   <div class="page-wrapper">
     <h1>Вход в систему</h1>
-    <LoginForm @submit="onSubmit"/>
+    <LoginForm @submit="onSubmit" />
   </div>
 </template>
 
@@ -23,6 +23,7 @@ const onSubmit = async (credentials) => {
     ElMessage.error(error.message || "An error occurred during login.");
   }
 };
+
 </script>
 
 <style lang="scss">
