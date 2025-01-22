@@ -33,7 +33,7 @@ export function useUsers() {
   });
 
   const editUserMutation = useMutation(
-    ({ userId, newUser }) => AdminService.editUser(userId, newUser),
+    (updatedUser) => AdminService.editUser(updatedUser),
     {
       onSuccess: (updatedUser) => {
         usersStore.updateUserInState(updatedUser.id, updatedUser);

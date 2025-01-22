@@ -4,110 +4,137 @@
     <div v-if="isLoading">Загрузка пользователей...</div>
     <div v-else-if="error">Ошибка: {{ error.message }}</div>
     <div v-else>
-      <el-table :data="users" style="width: 80%">
-        <el-table-column prop="id" label="ID" width="150" />
-        <el-table-column label="Имя">
-          <template #default="{ row }">
-            <template v-if="row.isEditing">
-              <el-input v-model="row.username" size="small" />
-            </template>
-            <template v-else>
-              {{ row.username }}
-            </template>
-          </template>
-        </el-table-column>
-        <el-table-column label="Роль">
-          <template #default="{ row }">
-            <template v-if="row.isEditing">
-              <el-select v-model="row.role" placeholder="Выберите роль">
-                <el-option label="Пользователь" value="user" />
-                <el-option label="Администратор" value="admin" />
-              </el-select>
-            </template>
-            <template v-else>
-              {{ row.role }}
-            </template>
-          </template>
-        </el-table-column>
-        <el-table-column fixed="right" label="Действия" min-width="150">
-          <template #default="{ row }">
-            <template v-if="row.isEditing">
-              <el-button size="small" type="success" @click="saveRow(row)">Сохранить</el-button>
-              <el-button size="small" type="danger" @click="cancelEdit(row)">Отмена</el-button>
-            </template>
-            <template v-else>
-              <el-button link type="primary" size="small" @click="editRow(row)">Редактировать</el-button>
-              <el-button link type="danger" size="small" @click="dialogVisible = true">Удалить</el-button>
-              <el-dialog v-model="dialogVisible" title="Tips" width="500">
-                <span>Уверены что хотите удалить пользователя
-                  {{ row.username }}</span>
-                <template #footer>
-                  <div class="dialog-footer">
-                    <el-button @click="dialogVisible = false">Cancel</el-button>
-                    <el-button type="primary" @click="deleteRow(row)">
-                      Confirm
-                    </el-button>
-                  </div>
-                </template>
-              </el-dialog>
-            </template>
-          </template>
-        </el-table-column>
-      </el-table>
+      <p id="selected-employee" v-if="selectedUser">
+        Selected employee: {{ selectedUser.username }}
+      </p>
+      <DxDataGrid @editor-preparing="onEditorPreparing" :columns="columns" :editing="editingOptions" id="dataGrid"
+        :data-source="localUsers" key-expr="id" @selection-changed="selectUser" @rowUpdating="onRowUpdating"
+        @rowRemoving="onRowRemoving" @rowInserting="onRowInserting">
+        <DxSelection mode="single" />
+      </DxDataGrid>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watch, toRaw } from "vue";
 import { ElMessage } from "element-plus";
+import DxDataGrid, { DxColumn, DxRequiredRule, DxEditing, DxSelection } from 'devextreme-vue/data-grid';
+import DxButton from 'devextreme-vue/button';
+import { DxForm, DxSimpleItem } from 'devextreme-vue/form';
+import { DxSelectBox } from 'devextreme-vue/select-box';
+import { useUsers } from "@/composables/useUsers";
 
-const { users, isLoading, error, editUserMutation, deleteUserMutation } = defineProps({
-  users: Array,
-  isLoading: Boolean,
-  error: Object,
-  editUserMutation: Object,
-  deleteUserMutation: Object,
+const {
+  users,
+  isLoading,
+  error,
+  addUserMutation,
+  editUserMutation,
+  deleteUserMutation
+} = useUsers();
+
+const selectedUser = ref();
+const localUsers = ref([]);
+
+const columns = ref([
+  { dataField: 'id', allowEditing: false, caption: "id" },
+  {
+    dataField: 'username', allowEditing: true, caption: "Имя пользователя",
+    validationRules: [{ type: 'required', message: 'Username is required' }]
+  },
+  {
+    dataField: 'role', allowEditing: true, caption: "Роль",
+    editorType: 'dxSelectBox',
+    editorOptions: { items: ['admin', 'user'] },
+    validationRules: [{ type: 'required', message: 'Role is required' }]
+  },
+  {
+    dataField: 'password', visible: false, caption: "Пароль",
+  }
+]);
+
+let isAdding = false;
+
+const editingOptions = ref({
+  mode: 'form',
+  allowUpdating: true,
+  allowAdding: true,
+  allowDeleting: true,
+  form: {
+    items: [
+      { dataField: 'username' },
+      { dataField: 'role', editorType: 'dxSelectBox', editorOptions: { items: ['admin', 'user'] } },
+      {
+        dataField: 'password',
+        editorType: 'dxTextBox',
+        editorOptions: { mode: 'password' }, // Поле пароля
+      }
+    ]
+  },
+  onRowUpdating: () => (isAdding = false),
+  onRowInserting: () => (isAdding = true),
 });
 
-const dialogVisible = ref(false);
 
-const editRow = (row) => {
-  row.isEditing = true;
-  row.originalData = { ...row };
-};
+const selectUser = (e) => {
+  e.component.byKey(e.currentSelectedRowKeys[0]).done(employee => {
+    if (employee) {
+      selectedUser.value = employee;
+    }
+  });
+}
 
-const saveRow = async (row) => {
-  try {
-    row.isEditing = false;
-    console.log(row.id);
+const onRowUpdating = (e) => {
+  const updatedData = { ...e.oldData, ...e.newData };
 
-    editUserMutation.mutate({
-      userId: row.id,
-      newUser: {
-        username: row.username,
-        role: row.role,
-      }
-    })
-    delete row.originalData;
-    ElMessage.success(`${row.username} successfully changed!`);
-  } catch (error) {
-    console.error("Error saving user data:", error);
-    ElMessage.error(`Something went wrong while changing ${row.username}`);
-    cancelEdit(row);
+  // Если новое значение пароля введено, обновляем его
+  if (updatedData.newPassword) {
+    updatedData.password = updatedData.newPassword;
+  }
+
+  // Удаляем вспомогательные поля
+  delete updatedData.newPassword;
+  delete updatedData.changePassword;
+
+  editUserMutation.mutate({ ...updatedData });
+  ElMessage.success(`${updatedData.username} успешно обновлён!`);
+}
+const onRowRemoving = (e) => {
+  console.log('Row deleting', e.data.id);
+  deleteUserMutation.mutate(e.data.id);
+}
+
+const onRowInserting = (e) => {
+  const newUser = { ...e.data };
+  if (!newUser.password) {
+    e.cancel = true;
+    ElMessage.error('Пароль обязателен');
+    return;
+  }
+  addUserMutation.mutate(newUser)
+}
+
+const onEditorPreparing = (e) => {
+  if (e.dataField === 'password') {
+    if (isAdding) {
+      // Обязательное поле при добавлении
+      e.editorOptions.validationRules = [
+        { type: 'required', message: 'Пароль обязателен при добавлении' }
+      ];
+    } else {
+      // Убираем обязательность при редактировании
+      e.editorOptions.validationRules = [];
+    }
   }
 };
 
-const cancelEdit = (row) => {
-  Object.assign(row, row.originalData);
-  row.isEditing = false;
-  delete row.originalData;
-};
+watch(users, (newVal) => {
+  localUsers.value = Array.isArray(newVal) ? toRaw(newVal) : []
+},
+  { immediate: true }
+)
 
-const deleteRow = async (row) => {
-  deleteUserMutation.mutate(row.id);
-  dialogVisible.value = false;
-};
 
 </script>
 

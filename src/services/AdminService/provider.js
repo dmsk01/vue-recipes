@@ -19,9 +19,11 @@ export const addUser = async (user) => {
   }
 };
 
-export const editUser = async (userId, newUser) => {
+export const editUser = async (updatedUser) => {
+  console.log("PROVIDER", updatedUser);
+
   try {
-    const response = await api.put(`/admin/users/${userId}`, newUser);
+    const response = await api.put(`/admin/users/${updatedUser.id}`, updatedUser);
     if (response.status === 200) {
       return { data: response.data, status: response.status };
     } else {
@@ -29,7 +31,7 @@ export const editUser = async (userId, newUser) => {
       return null;
     }
   } catch (error) {
-    console.error(`Error editing user with ID ${userId}:`, error);
+    console.error(`Error editing user with ID ${updatedUser.id}:`, error);
     throw error;
   }
 };
