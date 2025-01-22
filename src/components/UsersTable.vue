@@ -19,10 +19,7 @@
 <script setup>
 import { ref, watch, toRaw } from "vue";
 import { ElMessage } from "element-plus";
-import DxDataGrid, { DxColumn, DxRequiredRule, DxEditing, DxSelection } from 'devextreme-vue/data-grid';
-import DxButton from 'devextreme-vue/button';
-import { DxForm, DxSimpleItem } from 'devextreme-vue/form';
-import { DxSelectBox } from 'devextreme-vue/select-box';
+import DxDataGrid, {  DxSelection } from 'devextreme-vue/data-grid';
 import { useUsers } from "@/composables/useUsers";
 
 const {
@@ -68,7 +65,7 @@ const editingOptions = ref({
       {
         dataField: 'password',
         editorType: 'dxTextBox',
-        editorOptions: { mode: 'password' }, // Поле пароля
+        editorOptions: { mode: 'password' }, 
       }
     ]
   },
@@ -134,7 +131,6 @@ watch(users, (newVal) => {
 },
   { immediate: true }
 )
-
 
 </script>
 
